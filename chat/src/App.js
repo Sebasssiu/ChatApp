@@ -5,20 +5,18 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 import 'firebase/analytics';
-import back from "./back.png";
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
 import SendIcon from '@material-ui/icons/Send';
 var firebaseConfig = {
-  apiKey: "AIzaSyCQLXZy3Ziswu_6gSh8bGfyEMiOijlTTh8",
-  authDomain: "uvgossip-8294a.firebaseapp.com",
-  projectId: "uvgossip-8294a",
-  storageBucket: "uvgossip-8294a.appspot.com",
-  messagingSenderId: "548364933340",
-  appId: "1:548364933340:web:85106a5611cf56e4c9bc19",
-  measurementId: "G-2FKSKRP4X0"
+  apiKey: "AIzaSyDHpMqnp1yhOfxv-Sj_wgqQbXVlQzaP5K4",
+  authDomain: "warzone-73c91.firebaseapp.com",
+  projectId: "warzone-73c91",
+  storageBucket: "warzone-73c91.appspot.com",
+  messagingSenderId: "106808654694",
+  appId: "1:106808654694:web:5f864ef2bdae1d2e6ca6a7",
+  measurementId: "G-1DXFKFEJJ6"
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
@@ -34,7 +32,7 @@ function App() {
   return (
       <div className="App">
           <header>
-            <h1>Gossip</h1>
+            <h1>Warzone</h1>
             <SignOut />
           </header>
 
@@ -56,7 +54,7 @@ function SignIn() {
   return (
     <>
       <button className="sign-in" onClick={signInWithGoogle}>Entra con google</button>
-      <h1 style={{fontSize:15, textAlign: 'center'}}>Por favor no seas vulgar y disfruta. Tus datos permaneceran anónimos, para una experiencia única por favor ser de la UVG.</h1>
+      <h1 style={{fontSize:15, textAlign: 'center'}}>Respeta a tus compadres del warzone.</h1>
     </>
   )
 
@@ -72,7 +70,7 @@ function SignOut() {
 function ChatRoom() {
   const dummy = useRef();
   const messagesRef = firestore.collection('messages');
-  const query = messagesRef.orderBy('createdAt').limit(25);
+  const query = messagesRef.orderBy('createdAt');
   const [messages] = useCollectionData(query, { idField: 'id' });
 
   const [formValue, setFormValue] = useState('');
@@ -81,12 +79,14 @@ function ChatRoom() {
   const sendMessage = async (e) => {
     e.preventDefault();
 
-    const { uid } = auth.currentUser;
+    const { uid, photoURL, displayName } = auth.currentUser;
 
     await messagesRef.add({
       text: formValue,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       uid,
+      photoURL,
+      displayName
     })
 
     setFormValue('');
@@ -116,13 +116,13 @@ function ChatRoom() {
 
 
 function ChatMessage(props) {
-  const { text, uid } = props.message;
+  const { text, uid, photoURL, displayName } = props.message;
 
   const messageClass = uid === auth.currentUser.uid ? 'sent' : 'received';
 
   return (<>
     <div className={`message ${messageClass}`}>
-      
+      <img src={photoURL || 'https://api.adorable.io/avatars/23/abott@adorable.png'} />
       <p>{text}</p>
     </div>
   </>)
